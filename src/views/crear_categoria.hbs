@@ -1,0 +1,21 @@
+<div class="categoria-inline-form-container">
+    <form name="formCrearCategoria" action="/admin/dashboard/categorias/crear" method="post" class="row g-3 align-items-center">
+        <div class="col-auto">
+            <label for="nombre" class="visually-hidden">nombre de la categoria</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="categoria" required>
+        </div>
+        <div class="col-auto">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Confirmar</button>
+                <a href="/admin/dashboard/categorias" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+{{#if varMensaje}}
+<div class="alert alert-{{#if varEstiloMensaje}}{{varEstiloMensaje}}{{else}}danger{{/if}} alert-dismissible fade show mt-3" role="alert">
+    {{varMensaje}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}

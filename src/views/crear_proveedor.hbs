@@ -1,0 +1,63 @@
+<div class="proveedor-form-container">
+    <div class="text-center mb-4">
+        <i class="bi bi-people"></i>
+        <h3 class="proveedor-form-title">Proveedor</h3>
+        <p class="text-muted">Complete los datos del proveedor</p>
+    </div>
+    
+    <form method="POST" action="/admin/dashboard/proveedores/crear">
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" class="form-control proveedor-input" id="empresa" name="empresa" 
+                           placeholder=" " required>
+                    <label for="empresa">Empresa </label>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" class="form-control proveedor-input" id="contacto" name="contacto" 
+                           placeholder=" " required>
+                    <label for="contacto">Contacto </label>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="email" class="form-control proveedor-input" id="email" name="email" 
+                           placeholder=" " required>
+                    <label for="email">Email </label>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="tel" class="form-control proveedor-input" id="telefono" name="telefono" 
+                           placeholder=" " required>
+                    <label for="telefono">Teléfono </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+            <button type="submit" class="btn proveedor-btn-violet">
+                <i class="bi bi-check-lg me-2"></i>Registrar Proveedor
+            </button>
+        </div>
+    </form>
+</div>
+ {{#if varMensaje}}
+  {{#if varEstiloMensaje}}
+  <div class="alert alert-{{varEstiloMensaje}}" role="alert">
+    {{varMensaje}}
+  </div>
+  {{else}}
+  <div class="alert alert-danger" role="alert">
+    {{varMensaje}}
+  </div>
+  {{/if}}
+  {{/if}}
+<!-- Incluir Bootstrap JS si es necesario -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

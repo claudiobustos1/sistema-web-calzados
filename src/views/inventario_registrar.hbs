@@ -1,0 +1,18 @@
+<div class="container mt-4">
+  <h3>Agregar talle para: {{producto.nombre}}</h3>
+
+  <form action="/admin/dashboard/productos/{{producto.id_producto}}/inventario/registrar" method="POST" class="mt-3">
+    <div class="mb-3">
+      <label for="talle" class="form-label">Talle</label>
+      <input id="talle" name="talle" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock</label>
+      <input id="stock" name="stock" type="number" min="0" class="form-control" required>
+    </div>
+
+    <a href="/admin/dashboard/productos/{{producto.id_producto}}/inventario" class="btn btn-secondary">Volver</a>
+    <button type="submit" class="btn btn-primary">Agregar talle</button>
+  </form>
+</div>

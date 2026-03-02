@@ -1,0 +1,141 @@
+<div class="container mt-4 container-categorias">
+  <!-- Mensajes Flash - Fuera de la tabla -->
+  {{#if varMensaje}}
+  <div class="alert alert-{{#if varEstiloMensaje}}{{varEstiloMensaje}}{{else}}info{{/if}} alert-dismissible fade show" role="alert">
+    {{varMensaje}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {{/if}}
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Listado de Proveedores</h2>
+    <a href="/admin/dashboard/proveedores/crear" class="btn btn-primary">Nuevo Proveedor</a>
+  </div>
+
+  <!-- Buscador -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <form method="GET" action="/admin/dashboard/proveedores" class="row g-3 align-items-center">
+        <div class="col-md-8">
+          <input 
+            type="text" 
+            class="form-control" 
+            name="search" 
+            placeholder="Buscar proveedor por contacto..." 
+            value="{{search}}"
+          >
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-outline-primary w-100">
+            Buscar
+          </button>
+        </div>
+        <div class="col-md-2">
+          {{#if search}}
+          <a href="/admin/dashboard/proveedores" class="btn btn-outline-secondary w-100">
+            Limpiar
+          </a>
+          {{/if}}
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Información de resultados -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">
+      {{#if search}}
+        Mostrando {{proveedores.length}} de {{totalProveedores}} proveedores para "{{search}}"
+      {{else}}
+        Total: {{totalProveedores}} proveedores
+      {{/if}}
+    </p>
+  </div>
+
+  <!-- Tabla de proveedores -->
+  {{#if proveedores.length}}
+  <div class="table-responsive">
+    <table id="tablaProveedores" class="table table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>empresa</th>
+          <th>email</th>
+          <th>telefono</th>
+          <th>contacto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each proveedores}}
+        <tr>
+          <td>{{this.id_proveedor}}</td>
+          <td>{{this.empresa}}</td>
+          <td>{{this.email}}</td>
+          <td>{{this.telefono}}</td>
+          <td>{{this.contacto}}</td>
+          <td>
+            <div class="btn-group" role="group">
+              <a href="/admin/dashboard/proveedores/editar/{{this.id_proveedor}}" class="btn btn-warning btn-sm">Editar</a>
+              <a href="/admin/dashboard/proveedores/eliminar/{{this.id_proveedor}}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este proveedor?');">Eliminar</a>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginación -->
+  {{#if (gt totalPages 1)}}
+  <nav aria-label="Paginación de categorías">
+    <ul class="pagination justify-content-center">
+      <!-- Botón Anterior -->
+      {{#if hasPreviousPage}}
+      <li class="page-item">
+        <a class="page-link" href="/admin/dashboard/proveedores?page={{subtract currentPage 1}}&search={{search}}">
+          Anterior
+        </a>
+      </li>
+      {{else}}
+      <li class="page-item disabled">
+        <span class="page-link">Anterior</span>
+      </li>
+      {{/if}}
+
+      <!-- Números de página -->
+      {{#each (range 1 totalPages)}}
+        <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+          <a class="page-link" href="/admin/dashboard/proveedores?page={{this}}&search={{../search}}">
+            {{this}}
+          </a>
+        </li>
+      {{/each}}
+
+      <!-- Botón Siguiente -->
+      {{#if hasNextPage}}
+      <li class="page-item">
+        <a class="page-link" href="/admin/dashboard/proveedores?page={{add currentPage 1}}&search={{search}}">
+          Siguiente
+        </a>
+      </li>
+      {{else}}
+      <li class="page-item disabled">
+        <span class="page-link">Siguiente</span>
+      </li>
+      {{/if}}
+    </ul>
+  </nav>
+  {{/if}}
+
+  {{else}}
+  <div class="alert alert-info text-center">
+    {{#if search}}
+    No se encontraron proveedores para "{{search}}"
+    {{else}}
+    No hay proveedores registrados.
+    {{/if}}
+  </div>
+  {{/if}}
+</div>

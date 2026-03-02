@@ -1,0 +1,177 @@
+<div class="container mt-4 container-categorias">
+    <!-- Mensajes Flash - Fuera de la tabla -->
+    {{#if varMensaje}}
+    <div class="alert alert-{{#if varEstiloMensaje}}{{varEstiloMensaje}}{{else}}info{{/if}} alert-dismissible fade show" role="alert">
+      {{varMensaje}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{/if}}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Listado de Productos</h2>
+      <a href="/admin/dashboard/productos/registrar" class="btn btn-primary">Nuevo Producto</a>
+    </div>
+
+    <!-- Buscador -->
+    <div class="card mb-4">
+      <div class="card-body">
+        <form method="GET" action="/admin/dashboard/productos" class="row g-3 align-items-center">
+          <div class="col-md-8">
+            <input 
+              type="text" 
+              class="form-control" 
+              name="search" 
+              placeholder="Buscar producto por nombre..." 
+              value="{{search}}"
+            >
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-outline-primary w-100">
+              Buscar
+            </button>
+          </div>
+          <div class="col-md-2">
+            {{#if search}}
+            <a href="/admin/dashboard/productos" class="btn btn-outline-secondary w-100">
+              Limpiar
+            </a>
+            {{/if}}
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Información de resultados -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <p class="text-muted mb-0">
+        {{#if search}}
+          Mostrando {{productos.length}} de {{totalProductos}} productos para "{{search}}"
+        {{else}}
+          Total: {{totalProductos}} productos
+        {{/if}}
+      </p>
+    </div>
+
+    <!-- Tabla de productos -->
+    {{#if productos.length}}
+    <div class="table-responsive">
+      <table id="tablaProductos" class="table table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>imagen</th>
+            <th>Precio</th>
+            <th>Stock</th>
+            <th>stock_minimo</th>
+            <th>talle</th>
+            <th>Categorías</th>
+            <th>proveedores</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each productos}}
+          <tr>
+            <td>{{this.id_producto}}</td>
+            <td>{{this.nombre}}</td>
+              <td>
+                {{#if this.imagen}}
+                  <img src="/uploads/{{this.imagen}}" alt="{{this.nombre}}" width="150">
+                {{else}}
+                  <p>no hay imagen</p>
+                {{/if}}
+              </td>
+              <td>{{this.precio}}</td>
+
+             
+               <td>
+              {{#if this.totalStock}}
+                {{this.totalStock}}
+              {{else}}
+                0
+              {{/if}}
+            </td>
+
+              <td>{{this.stock_minimo}}</td>
+                          <!-- mostrar todos los talles y su stock -->
+             <td>
+               {{#if this.inventario}}
+                 {{#each this.inventario}}
+                   <div class="small">Talle {{this.talle}}: {{this.stock}}</div>
+                 {{/each}}
+               {{else}}
+                 <div class="small text-muted">sin talles</div>
+               {{/if}}
+             </td>
+
+              <td>{{#if this.categoria}}{{this.categoria.nombre}}{{/if}}</td>
+              <td>{{#if this.proveedor}}{{this.proveedor.empresa}}{{/if}}</td>
+            <td>
+              <div class="btn-group" role="group">
+                <a href="/admin/dashboard/productos/editar/{{this.id_producto}}" class="btn btn-warning btn-sm">Editar</a>
+                <a href="/admin/dashboard/productos/eliminar/{{this.id_producto}}" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que deseas eliminar este producto?');">Eliminar</a>
+                <form action="/admin/dashboard/productos/{{this.id_producto}}/inventario" method="GET" style="display:inline">
+                  <button type="submit" class="btn btn-info btn-sm">Ver inventario</button>
+
+                </form>
+              </div>
+            </td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    {{#if (gt totalPages 1)}}
+    <nav aria-label="Paginación de categorías">
+      <ul class="pagination justify-content-center">
+        <!-- Botón Anterior -->
+        {{#if hasPreviousPage}}
+        <li class="page-item">
+          <a class="page-link" href="/admin/dashboard/productos?page={{subtract currentPage 1}}&search={{search}}">
+            Anterior
+          </a>
+        </li>
+        {{else}}
+        <li class="page-item disabled">
+          <span class="page-link">Anterior</span>
+        </li>
+        {{/if}}
+
+        <!-- Números de página -->
+        {{#each (range 1 totalPages)}}
+          <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+            <a class="page-link" href="/admin/dashboard/productos?page={{this}}&search={{../search}}">
+              {{this}}
+            </a>
+          </li>
+        {{/each}}
+
+        <!-- Botón Siguiente -->
+        {{#if hasNextPage}}
+        <li class="page-item">
+          <a class="page-link" href="/admin/dashboard/productos?page={{add currentPage 1}}&search={{search}}">
+            Siguiente
+          </a>
+        </li>
+        {{else}}
+        <li class="page-item disabled">
+          <span class="page-link">Siguiente</span>
+        </li>
+        {{/if}}
+      </ul>
+    </nav>
+    {{/if}}
+
+    {{else}}
+    <div class="alert alert-info text-center">
+      {{#if search}}
+      No se encontraron productos para "{{search}}"
+      {{else}}
+      No hay productos registrados.
+      {{/if}}
+    </div>
+    {{/if}}
+  </div>

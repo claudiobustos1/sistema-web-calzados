@@ -1,0 +1,59 @@
+{{#if varMensaje}}
+{{#if varEstiloMensaje}}
+<div class="alert alert-{{varEstiloMensaje}}" role="alert">
+  {{{varMensaje}}}
+</div>
+{{else}}
+<div class="alert alert-danger" role="alert">
+  {{{varMensaje}}}
+</div>
+{{/if}}
+{{/if}}
+
+<h1>Registro Usuario</h1>
+<form id="formRegistro" action="/registro_usuario" method="post">
+  <div class="row gy-2 gx-3 align-items-center registro-form-container" >
+    <div class="col-12">
+      <div class="form-floating">
+        <input type="text" class="form-control proveedor-input" id="nombre" name="nombre" placeholder=" " required>
+        <label for="nombre">Nombre </label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating">
+        <input type="text" class="form-control proveedor-input" id="apellido" name="apellido" placeholder=" " required>
+        <label for="apellido">Apellido </label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating">
+        <input type="email" class="form-control proveedor-input" id="email" name="email" placeholder=" " required>
+        <label for="email">Email </label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating">
+        <input type="password" class="form-control proveedor-input" id="password" name="password" minlength="8"
+          placeholder=" " required>
+        <label for="password">Password </label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating">
+        <input type="password" class="form-control proveedor-input" id="password1" name="password1" minlength="8"
+          placeholder=" " required>
+        <label for="password1">Confirmar Password </label>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="form-floating">
+        <select name="rol" id="rol">
+          <option value="cliente">Cliente</option>
+          <option value="admin">Administrador</option>
+        </select>
+        <label for="rol">Rol </label>
+      </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Registrar</button>
+</form>

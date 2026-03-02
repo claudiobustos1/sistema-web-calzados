@@ -1,0 +1,18 @@
+<div class="container mt-4">
+  <h3>Editar talle #{{item.id_inventario}}</h3>
+
+  <form action="/admin/dashboard/productos/inventario/{{item.id_inventario}}/editar" method="POST" class="mt-3">
+    <div class="mb-3">
+      <label for="talle" class="form-label">Talle</label>
+      <input id="talle" name="talle" class="form-control" value="{{item.talle}}">
+    </div>
+
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock</label>
+      <input id="stock" name="stock" type="number" min="0" class="form-control" value="{{item.stock}}" required>
+    </div>
+
+    <a href="/admin/dashboard/productos" class="btn btn-secondary">Volver</a>
+    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+  </form>
+</div>
