@@ -132,3 +132,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en puerto ${PORT}`);
 });
+sequelize.sync({ alter: true })
+  .then(() => console.log("Tablas sincronizadas"))
+  .catch(err => console.error("Error al sincronizar:", err));
