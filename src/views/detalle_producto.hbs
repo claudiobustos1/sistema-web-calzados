@@ -1,0 +1,345 @@
+<div class="container mt-5">
+  <!-- Botón atrás -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <a href="/catalogo" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Volver al Catálogo
+      </a>
+    </div>
+  </div>
+
+  {{#if varMensaje}}
+    <div class="alert alert-{{varEstiloMensaje}} alert-dismissible fade show" role="alert">
+      {{varMensaje}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {{/if}}
+
+  {{#if producto}}
+    <div class="row">
+      <!-- Imagen del producto -->
+      <div class="col-md-5 mb-4">
+        <div class="bg-light p-4 rounded" style="min-height: 400px; display: flex; align-items: center; justify-content: center;">
+          {{#if producto.imagen}}
+            <img src="/uploads/{{producto.imagen}}" alt="{{producto.nombre}}" class="img-fluid" style="max-height: 400px; object-fit: contain;">
+          {{else}}
+            <i class="fas fa-shoe-prints fa-10x text-muted"></i>
+          {{/if}}
+        </div>
+      </div>
+
+      <!-- Información del producto -->
+      <div class="col-md-7">
+        <!-- Nombre y categoría -->
+        <h1 class="mb-2">{{producto.nombre}}</h1>
+        {{#if producto.categoria}}
+          <p class="mb-3">
+            <a href="/catalogo/categoria/{{producto.categoria.id_categoria}}" class="badge bg-primary text-decoration-none">
+              {{producto.categoria.nombre}}
+            </a>
+          </p>
+        {{/if}}
+
+        <!-- Precio -->
+        <div class="mb-4">
+          <h2 class="text-primary mb-0">${{producto.precio}}</h2>
+        </div>
+
+        <!-- Descripción -->
+        <div class="mb-4">
+          <h5>Descripción</h5>
+          <p class="text-muted">
+            {{#if producto.descripcion}}
+              {{producto.descripcion}}
+            {{else}}
+              No hay descripción disponible
+            {{/if}}
+          </p>
+        </div>
+
+        <!-- Stock y talles disponibles -->
+        <div class="mb-4">
+          <h5>Talles Disponibles</h5>
+          {{#if producto.inventario}}
+            {{#if producto.inventario.length}}
+              <div class="btn-group" role="group">
+                {{#each producto.inventario}}
+                  {{#if (gt this.stock 0)}}
+                    <button type="button" class="btn btn-outline-primary talle-btn" data-talle="{{this.talle}}" data-id-inventario="{{this.id_inventario}}" data-stock="{{this.stock}}">
+                      {{this.talle}}
+                    </button>
+                  {{else}}
+                    <button type="button" class="btn btn-outline-secondary" disabled>
+                      {{this.talle}} <small>(Sin stock)</small>
+                    </button>
+                  {{/if}}
+                {{/each}}
+              </div>
+            {{else}}
+              <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> No hay talles disponibles
+              </div>
+            {{/if}}
+          {{else}}
+            <div class="alert alert-warning">
+              <i class="fas fa-exclamation-triangle"></i> Información de inventory no disponible
+            </div>
+          {{/if}}
+        </div>
+
+        <!-- Stock general -->
+        <div class="mb-4 stock-status">
+          <h5>Estado de Stock</h5>
+          {{#if producto.inventario}}
+            {{#if producto.inventario.0.stock}}
+              <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> En Stock - {{producto.inventario.0.stock}} unidades disponibles
+              </div>
+            {{else}}
+              <div class="alert alert-danger">
+                <i class="fas fa-times-circle"></i> Sin Stock
+              </div>
+            {{/if}}
+          {{/if}}
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="mb-4">
+          {{#if producto.inventario}}
+            {{#if producto.inventario.0.stock}}
+              {{#if user}}
+                <button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#modalCarrito">
+                  <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+                </button>
+              {{else}}
+                <a href="/inicioSesion" class="btn btn-primary btn-lg">
+                  <i class="fas fa-sign-in-alt"></i> Inicia Sesión para Comprar
+                </a>
+              {{/if}}
+            {{else}}
+              <button class="btn btn-secondary btn-lg" disabled>
+                <i class="fas fa-ban"></i> Sin Stock
+              </button>
+            {{/if}}
+          {{/if}}
+          {{#if user}}
+            <button class="btn btn-outline-secondary btn-lg">
+              <i class="fas fa-heart"></i> Agregar a Favoritos
+            </button>
+          {{/if}}
+        </div>
+
+        <!-- Información adicional -->
+        <div class="border-top pt-4">
+          <div class="row">
+            <div class="col-md-6">
+              <h6>Envío</h6>
+              <p class="text-muted">
+                <i class="fas fa-truck"></i> Envío a todo el país
+              </p>
+            </div>
+            <div class="col-md-6">
+              <h6>Garantía</h6>
+              <p class="text-muted">
+                <i class="fas fa-shield-alt"></i> Garantía de calidad
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos relacionados -->
+    {{#if productosRelacionados.length}}
+      <div class="row mt-5">
+        <div class="col-md-12">
+          <h3 class="mb-4">Productos Relacionados</h3>
+        </div>
+      </div>
+      <div class="row">
+        {{#each productosRelacionados}}
+          <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 shadow-sm">
+              <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                {{#if this.imagen}}
+                  <img src="/uploads/{{this.imagen}}" alt="{{this.nombre}}" class="img-fluid p-2" style="max-height: 100%; object-fit: contain;">
+                {{else}}
+                  <i class="fas fa-shoe-prints fa-4x text-muted"></i>
+                {{/if}}
+              </div>
+              <div class="card-body d-flex flex-column">
+                <h6 class="card-title text-truncate">{{this.nombre}}</h6>
+                <p class="h6 text-primary mb-auto">${{this.precio}}</p>
+                <a href="/catalogo/detalle/{{this.id_producto}}" class="btn btn-outline-primary btn-sm w-100">
+                  Ver Detalle
+                </a>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{/if}}
+  {{else}}
+    <div class="alert alert-danger" role="alert">
+      <i class="fas fa-exclamation-circle"></i> Producto no encontrado
+    </div>
+  {{/if}}
+</div>
+
+<!-- Modal para agregar al carrito -->
+<div class="modal fade" id="modalCarrito" tabindex="-1" aria-labelledby="modalCarritoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCarritoLabel">Agregar al Carrito</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formAgregarCarrito">
+          <div class="mb-3">
+            <label for="talleSelect" class="form-label">Selecciona un Talle</label>
+            <select class="form-select" id="talleSelect" required>
+              <option value="">-- Elige un talle --</option>
+              {{#each producto.inventario}}
+                {{#if (gt this.stock 0)}}
+                  <option value="{{this.id_inventario}}" data-stock="{{this.stock}}">
+                    Talle {{this.talle}} ({{this.stock}} disponibles)
+                  </option>
+                {{/if}}
+              {{/each}}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="cantidadInput" class="form-label">Cantidad</label>
+            <input type="number" class="form-control" id="cantidadInput" min="1" value="1" required>
+          </div>
+          <div class="alert alert-info" id="stockInfo" style="display: none;">
+            Stock disponible: <span id="stockValue">0</span>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="agregarAlCarrito()">
+          <i class="fas fa-shopping-cart"></i> Agregar al Carrito
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .btn-group .btn {
+    margin-right: 5px;
+    margin-bottom: 5px;
+  }
+
+  .talle-btn {
+    cursor: pointer;
+  }
+
+  .talle-btn.active {
+    background-color: #007bff;
+    color: white;
+  }
+</style>
+
+<script>
+  let talleSeleccionado = null;
+
+  // funcion actualizar info de stock 
+  document.getElementById('talleSelect').addEventListener('change', function() {
+    const option = this.options[this.selectedIndex];
+    const stock = option.getAttribute('data-stock');
+    talleSeleccionado = this.value;
+    if (stock) {
+      document.getElementById('stockValue').textContent = stock;
+      document.getElementById('stockInfo').style.display = 'block';
+      document.getElementById('cantidadInput').max = stock;
+      updateStockStatus(stock);
+    } else {
+      document.getElementById('stockInfo').style.display = 'none';
+    }
+  });
+
+  // Función para actualizar el estado de stock general
+  function updateStockStatus(stock) {
+    const stockStatusDiv = document.querySelector('.stock-status');
+    if (stockStatusDiv) {
+      if (stock > 0) {
+        stockStatusDiv.innerHTML = `
+          <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> En Stock - ${stock} unidades disponibles
+          </div>
+        `;
+      } else {
+        stockStatusDiv.innerHTML = `
+          <div class="alert alert-danger">
+            <i class="fas fa-times-circle"></i> Sin Stock
+          </div>
+        `;
+      }
+    }
+  }
+
+  // Función para agregar al carrito
+  function agregarAlCarrito() {
+    const talleSelect = document.getElementById('talleSelect');
+    const cantidad = document.getElementById('cantidadInput').value;
+
+    if (!talleSelect.value) {
+      alert('Por favor selecciona un talle');
+      return;
+    }
+
+    if (!cantidad || cantidad <= 0) {
+      alert('Por favor ingresa una cantidad válida');
+      return;
+    }
+
+    const talle = talleSelect.options[talleSelect.selectedIndex].text;
+    console.log('Producto agregado - Talle:', talle, 'Cantidad:', cantidad);
+    alert(`Talle ${talle} x${cantidad} agregado al carrito!`);
+    bootstrap.Modal.getInstance(document.getElementById('modalCarrito')).hide();
+  }
+
+  document.querySelectorAll('.talle-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const talle = this.getAttribute('data-talle');
+      const idInventario = this.getAttribute('data-id-inventario');
+      const stock = this.getAttribute('data-stock');
+      
+      document.querySelectorAll('.talle-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Actualizar stock
+      updateStockStatus(stock);
+      
+      // Establecer el talle seleccionado
+      talleSeleccionado = idInventario;
+      
+      const talleSelect = document.getElementById('talleSelect');
+      talleSelect.value = idInventario;
+      talleSelect.dispatchEvent(new Event('change'));
+      
+      console.log('Talle seleccionado:', talle);
+    });
+  });
+
+  document.getElementById('modalCarrito').addEventListener('show.bs.modal', function() {
+    if (!talleSeleccionado) {
+      document.getElementById('talleSelect').focus();
+    } else {
+      document.getElementById('cantidadInput').focus();
+    }
+  });
+</script>

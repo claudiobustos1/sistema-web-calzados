@@ -71,13 +71,30 @@ app.engine(
       add: function (a, b) {
         return a + b;
       },
+      sum: function (a, b) {
+        return a + b;
+      },
       // Helper para restar
       subtract: function (a, b) {
         return a - b;
       },
+      subtractOne: function (a) {
+        return a - 1;
+      },
       // Helper para unless (opuesto de if)
       unless: function (condition, options) {
         return !condition ? options.fn(this) : options.inverse(this); 
+      },
+      // Helper para truncar texto
+      truncate: function (text, length) {
+        if (!text) return '';
+        if (text.length <= length) return text;
+        return text.substring(0, length) + '...';
+      },
+      // Helper para sumar stock de inventario
+      getSumStock: function (inventarioArray) {
+        if (!Array.isArray(inventarioArray)) return 0;
+        return inventarioArray.reduce((sum, item) => sum + (item.stock || 0), 0);
       },
     },
   })
@@ -106,6 +123,8 @@ const productosRuta = require("./src/routes/productosRuta");
 app.use("/admin/dashboard", productosRuta);
 const inventarioRoutes = require('./src/routes/inventarioRuta');
 app.use('/admin/dashboard', inventarioRoutes);
+app.use('/catalogo', require('./src/routes/catalogoRuta'));
+
 
 //conexion y sincronizacion con la base de datos
 const PORT = process.env.PORT || 3000;

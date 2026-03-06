@@ -1,0 +1,197 @@
+<div class="container mt-5">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h1>Catálogo de Productos</h1>
+      <p class="text-muted">Encontramos {{totalProductos}} productos</p>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda y filtros -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <form method="GET" action="/catalogo" class="input-group">
+        <input 
+          type="text" 
+          name="search" 
+          class="form-control" 
+          placeholder="Buscar productos..." 
+          value="{{search}}"
+        >
+        <button class="btn btn-primary" type="submit">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+      </form>
+    </div>
+    <div class="col-md-4">
+      <select class="form-control" id="filtroCategoria" onchange="filtrarPorCategoria()">
+        <option value="">Todas las categorías</option>
+        {{#each categorias}}
+          <option value="{{this.id_categoria}}" {{#if (eq ../categoria this.nombre)}}selected{{/if}}>
+            {{this.nombre}}
+          </option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+
+  <!-- Mensajes de sesión -->
+  {{#if varMensaje}}
+    <div class="alert alert-{{varEstiloMensaje}} alert-dismissible fade show" role="alert">
+      {{varMensaje}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  {{/if}}
+
+  <!-- Listado de productos -->
+  {{#if productos.length}}
+    <div class="row">
+      {{#each productos}}
+        <div class="col-md-6 col-lg-4 col-xl-3 mb-4">
+          <div class="card h-100 shadow-sm">
+            <!-- Imagen del producto -->
+            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 250px;">
+              {{#if this.imagen}}
+                <img src="/uploads/{{this.imagen}}" alt="{{this.nombre}}" class="img-fluid p-2" style="max-height: 100%; object-fit: contain;">
+              {{else}}
+                <i class="fas fa-shoe-prints fa-5x text-muted"></i>
+              {{/if}}
+            </div>
+
+            <div class="card-body d-flex flex-column">
+              <!-- Nombre del producto -->
+              <h5 class="card-title text-truncate">{{this.nombre}}</h5>
+              
+              <!-- Descripción corta -->
+              <p class="card-text text-muted small">
+                {{#if this.descripcion}}
+                  {{truncate this.descripcion 80}}
+                {{else}}
+                  Sin descripción
+                {{/if}}
+              </p>
+
+              <!-- Categoría -->
+              {{#if this.categoria}}
+                <p class="card-text">
+                  <small class="badge bg-secondary">{{this.categoria.nombre}}</small>
+                </p>
+              {{/if}}
+
+              <!-- Precio y Stock -->
+              <div class="mt-auto">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="h5 mb-0">${{this.precio}}</span>
+                  {{#if this.inventario}}
+                    {{#if (gt this.inventario.0.stock 0)}}
+                      <span class="badge bg-success">En Stock</span>
+                    {{else}}
+                      <span class="badge bg-danger">Sin Stock</span>
+                    {{/if}}
+                  {{/if}}
+                </div>
+
+                <!-- Botón ver detalle -->
+                <a href="/catalogo/detalle/{{this.id_producto}}" class="btn btn-outline-primary btn-sm w-100">
+                  <i class="fas fa-eye"></i> Ver Detalle
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    <!-- Paginación -->
+    {{#if totalPages}}
+      <nav aria-label="Page navigation" class="mt-5">
+        <ul class="pagination justify-content-center">
+          <!-- Página anterior -->
+          {{#if hasPreviousPage}}
+            <li class="page-item">
+              <a class="page-link" href="/catalogo?page={{subtractOne currentPage}}{{#if search}}&search={{search}}{{/if}}{{#if categoria}}&categoria={{categoria}}{{/if}}">
+                Anterior
+              </a>
+            </li>
+          {{else}}
+            <li class="page-item disabled">
+              <span class="page-link">Anterior</span>
+            </li>
+          {{/if}}
+
+          <!-- Números de página -->
+          {{#each (range 1 (sum totalPages 1))}}
+            <li class="page-item {{#if (eq this ../currentPage)}}active{{/if}}">
+              <a class="page-link" href="/catalogo?page={{this}}{{#if ../search}}&search={{../search}}{{/if}}{{#if ../categoria}}&categoria={{../categoria}}{{/if}}">
+                {{this}}
+              </a>
+            </li>
+          {{/each}}
+
+          <!-- Página siguiente -->
+          {{#if hasNextPage}}
+            <li class="page-item">
+              <a class="page-link" href="/catalogo?page={{sum currentPage 1}}{{#if search}}&search={{search}}{{/if}}{{#if categoria}}&categoria={{categoria}}{{/if}}">
+                Siguiente
+              </a>
+            </li>
+          {{else}}
+            <li class="page-item disabled">
+              <span class="page-link">Siguiente</span>
+            </li>
+          {{/if}}
+        </ul>
+      </nav>
+    {{/if}}
+  {{else}}
+    <!-- Sin productos -->
+    <div class="alert alert-info text-center mt-5" role="alert">
+      <i class="fas fa-search fa-3x mb-3"></i>
+      <h4>No se encontraron productos</h4>
+      <p>Intenta con otros términos de búsqueda o filtros</p>
+      <a href="/catalogo" class="btn btn-primary mt-3">Ver todos los productos</a>
+    </div>
+  {{/if}}
+</div>
+
+<script>
+  // Función para filtrar por categoría
+  function filtrarPorCategoria() {
+    const idCategoria = document.getElementById('filtroCategoria').value;
+    if (idCategoria) {
+      window.location.href = `/catalogo/categoria/${idCategoria}`;
+    } else {
+      window.location.href = '/catalogo';
+    }
+  }
+
+  // Helpers personalizados (asegúrate de que existan en tu configuración de hbs)
+  // truncate: corta texto
+  // eq: compara igualdad
+  // gt: mayor que
+  // subtractOne: resta 1
+  // sum: suma
+  // range: rango de números
+</script>
+
+<style>
+  .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .card-img-top {
+    overflow: hidden;
+  }
+
+  .pagination .page-link {
+    color: #007bff;
+  }
+
+  .pagination .page-link:hover {
+    color: #0056b3;
+  }
+</style>
