@@ -144,8 +144,8 @@ app.use('/', pedidoRuta);
 const PORT = process.env.PORT || 3000;
 
 // Sincronizar base de datos y crear tablas
-sequelize.sync({ alter: true }).then(() => {
-  console.log('Base de datos sincronizada correctamente');
+sequelize.sync().then(() => {
+  console.log('Base de datos conectada correctamente');
   
   app.listen(PORT, () => {
     console.log(`Servidor corriendo en puerto ${PORT}`);
@@ -154,6 +154,3 @@ sequelize.sync({ alter: true }).then(() => {
   console.error('Error al sincronizar la base de datos:', error);
   process.exit(1);
 });
-sequelize.sync({ alter: true })
-  .then(() => console.log("Tablas sincronizadas"))
-  .catch(err => console.error("Error al sincronizar:", err));
