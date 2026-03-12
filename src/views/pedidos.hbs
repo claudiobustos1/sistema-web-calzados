@@ -1,0 +1,102 @@
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h1 class="mb-2">
+        <i class="fas fa-box-open"></i> Mis Pedidos
+      </h1>
+      <p class="text-muted">Revisa el historial y estado de tus compras.</p>
+    </div>
+  </div>
+
+  {{#if varMensaje}}
+    <div class="alert alert-{{varEstiloMensaje}} alert-dismissible fade show" role="alert">
+      {{varMensaje}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {{/if}}
+
+  {{#if pedidos.length}}
+    <div class="row">
+      <div class="col-12">
+        {{#each pedidos}}
+          <div class="card shadow-sm mb-4 border-0">
+            <div class="card-header bg-violeta-azulado text-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">
+                <i class="fas fa-receipt me-2"></i> Pedido #{{this.id_pedido}}
+              </h5>
+              <span class="badge bg-light text-dark fs-6">{{this.estado}}</span>
+            </div>
+            <div class="card-body">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <p class="mb-1 text-muted"><i class="far fa-calendar-alt"></i> Fecha de compra:</p>
+                  <strong>{{formatearFecha this.fecha}}</strong>
+                </div>
+                <div class="col-md-6 text-md-end">
+                  <p class="mb-1 text-muted">Total del pedido:</p>
+                  <h4 class="text-violeta-azulado mb-0">${{this.total}}</h4>
+                </div>
+              </div>
+              
+              <hr>
+              <h6 class="mb-3">Artículos del pedido:</h6>
+              <div class="table-responsive">
+                <table class="table table-borderless align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Producto</th>
+                      <th>Talle</th>
+                      <th class="text-center">Cant.</th>
+                      <th class="text-end">Precio U.</th>
+                      <th class="text-end">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{#each this.items}}
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            {{#if this.inventario.Producto.imagen}}
+                              <img src="/uploads/{{this.inventario.Producto.imagen}}" alt="Imagen producto" 
+                                   style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 15px;">
+                            {{else}}
+                              <div style="width: 50px; height: 50px; background-color: #f0f0f0; border-radius: 4px; margin-right: 15px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-shoe-prints text-muted"></i>
+                              </div>
+                            {{/if}}
+                            <strong>{{this.inventario.Producto.nombre}}</strong>
+                          </div>
+                        </td>
+                        <td><span class="badge bg-secondary">{{this.inventario.talle}}</span></td>
+                        <td class="text-center">{{this.cantidad}}</td>
+                        <td class="text-end">${{this.precioxUni}}</td>
+                        <td class="text-end fw-bold">${{this.subTotal}}</td>
+                      </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{else}}
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm text-center py-5 border-0">
+          <div class="card-body">
+            <i class="fas fa-box-open fa-5x text-muted mb-3"></i>
+            <h3 class="text-muted">Aún no tienes pedidos</h3>
+            <p class="text-muted mb-4">
+              Cuando realices compras en la tienda, aparecerán aquí.
+            </p>
+            <a href="/catalogo" class="btn btn-violeta-azulado btn-lg">
+              <i class="fas fa-shopping-bag"></i> Ir al Catálogo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>

@@ -122,11 +122,6 @@
               </button>
             {{/if}}
           {{/if}}
-          {{#if user}}
-            <button class="btn btn-outline-secondary btn-lg">
-              <i class="fas fa-heart"></i> Agregar a Favoritos
-            </button>
-          {{/if}}
         </div>
 
         <!-- Información adicional -->
@@ -306,10 +301,37 @@
       return;
     }
 
+    const id_inventario = talleSelect.value; // Este es el id_inventario
     const talle = talleSelect.options[talleSelect.selectedIndex].text;
-    console.log('Producto agregado - Talle:', talle, 'Cantidad:', cantidad);
-    alert(`Talle ${talle} x${cantidad} agregado al carrito!`);
-    bootstrap.Modal.getInstance(document.getElementById('modalCarrito')).hide();
+
+    // Hacer fetch POST al endpoint del carrito
+    fetch('/carrito/agregar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id_inventario: parseInt(id_inventario),
+        cantidad: parseInt(cantidad)
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error al agregar al carrito');
+      }
+      return response.json();
+    })
+    .then(data => {
+      alert(`Talle ${talle} x${cantidad} agregado al carrito!`);
+      bootstrap.Modal.getInstance(document.getElementById('modalCarrito')).hide();
+      // Limpiar formulario
+      document.getElementById('cantidadInput').value = 1;
+      talleSelect.value = '';
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al agregar al carrito: ' + error.message);
+    });
   }
 
   document.querySelectorAll('.talle-btn').forEach(btn => {

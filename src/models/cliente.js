@@ -11,6 +11,11 @@ const Cliente = sequelize.define('Cliente', {
     type: DataTypes.STRING(200),
     allowNull: false
   },
+  ciudad: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    defaultValue: 'No especificada' // Parche temporal para filas antiguas si las hay
+  },
   telefono: {
     type: DataTypes.STRING(20),
     allowNull: false

@@ -96,6 +96,17 @@ app.engine(
         if (!Array.isArray(inventarioArray)) return 0;
         return inventarioArray.reduce((sum, item) => sum + (item.stock || 0), 0);
       },
+      // Helper para formatear fechas (DD/MM/YYYY HH:MM)
+      formatearFecha: function(fechaStr) {
+        if (!fechaStr) return '';
+        const fecha = new Date(fechaStr);
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const año = fecha.getFullYear();
+        const horas = String(fecha.getHours()).padStart(2, '0');
+        const minutos = String(fecha.getMinutes()).padStart(2, '0');
+        return `${dia}/${mes}/${año} ${horas}:${minutos}`;
+      }
     },
   })
 );
@@ -124,13 +135,24 @@ app.use("/admin/dashboard", productosRuta);
 const inventarioRoutes = require('./src/routes/inventarioRuta');
 app.use('/admin/dashboard', inventarioRoutes);
 app.use('/catalogo', require('./src/routes/catalogoRuta'));
-
+const carritoRuta = require('./src/routes/carritoRuta');
+app.use('/carrito', carritoRuta);
+const pedidoRuta = require('./src/routes/pedidoRuta');
+app.use('/', pedidoRuta);
 
 //conexion y sincronizacion con la base de datos
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+// Sincronizar base de datos y crear tablas
+sequelize.sync({ alter: true }).then(() => {
+  console.log('Base de datos sincronizada correctamente');
+  
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+  });
+}).catch(error => {
+  console.error('Error al sincronizar la base de datos:', error);
+  process.exit(1);
 });
 sequelize.sync({ alter: true })
   .then(() => console.log("Tablas sincronizadas"))

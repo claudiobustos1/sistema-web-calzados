@@ -1,0 +1,470 @@
+<div class="container py-5">
+  <!-- Encabezado -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <h1 class="mb-2">
+        <i class="fas fa-shopping-cart"></i> Mi Carrito
+      </h1>
+    </div>
+  </div>
+  
+
+  {{#if varMensaje}}
+    <div class="alert alert-{{varEstiloMensaje}} alert-dismissible fade show" role="alert">
+      {{varMensaje}}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {{/if}}
+
+  {{#if items}}
+    {{#if items.length}}
+      <div class="row">
+        <!-- Tabla de productos -->
+        <div class="col-md-8">
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Producto</th>
+                      <th>Talle</th>
+                      <th>Precio</th>
+                      <th>Cantidad</th>
+                      <th>Subtotal</th>
+                      <th class="text-center">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {{#each items}}
+                      <tr class="item-row" data-id-item="{{this.id_item}}">
+                        <td>
+                          <div class="d-flex align-items-center">
+                            {{#if this.Inventario.Producto.imagen}}
+                              <img src="/uploads/{{this.Inventario.Producto.imagen}}" alt="{{this.Inventario.Producto.nombre}}" 
+                                   style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px; margin-right: 10px;">
+                            {{else}}
+                              <div style="width: 60px; height: 60px; background-color: #f0f0f0; border-radius: 5px; margin-right: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-shoe-prints text-muted"></i>
+                              </div>
+                            {{/if}}
+                            <div>
+                              <a href="/catalogo/detalle/{{this.Inventario.id_producto}}" class="text-decoration-none">
+                                <strong>{{this.Inventario.Producto.nombre}}</strong>
+                              </a>
+                              <br>
+                              <small class="text-muted">ID: {{this.id_item}}</small>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="badge bg-primary">{{this.Inventario.talle}}</span>
+                        </td>
+                        <td>
+                          <strong>${{this.Inventario.Producto.precio}}</strong>
+                        </td>
+                        <td>
+                          <input type="number" class="form-control form-control-sm cantidad-input" 
+                                 value="{{this.cantidad}}" min="1" style="width: 80px;">
+                        </td>
+                        <td>
+                          <strong class="subtotal-value">${{this.subtotal}}</strong>
+                        </td>
+                        <td class="text-center">
+                          <button class="btn btn-sm btn-danger btn-eliminar" 
+                                  onclick="eliminarDelCarrito({{this.id_item}})">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    {{/each}}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="d-flex justify-content-between">
+                <a href="/catalogo" class="btn btn-outline-primary">
+                  <i class="fas fa-arrow-left"></i> Continuar Comprando
+                </a>
+                <button class="btn btn-warning" onclick="vaciarCarrito()">
+                  <i class="fas fa-trash-alt"></i> Vaciar Carrito
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resumen del pedido -->
+        <div class="col-md-4">
+          <div class="card shadow-sm sticky-top" style="top: 20px;">
+            <div class="card-header bg-violeta-azulado text-white">
+              <h5 class="mb-0">Resumen del Pedido</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Subtotal:</span>
+                <strong>$<span id="subtotalValue">{{subtotal}}</span></strong>
+              </div>
+
+              <div class="d-flex justify-content-between mb-3">
+                <span>Envío:</span>
+                <strong class="text-success">Gratis</strong>
+              </div>
+              <hr>
+              <div class="d-flex justify-content-between mb-3">
+                <h5>Total:</h5>
+                <h5 class="text-violeta-azulado">
+                  $<span id="totalValue">{{total}}</span>
+                </h5>
+              </div>
+
+              {{#if user}}
+                <button class="btn btn-violeta-azulado btn-lg w-100 mb-2" onclick="mostrarCheckout()">
+                  <i class="fas fa-credit-card"></i> Proceder al Pago
+                </button>
+              {{else}}
+                <a href="/inicioSesion" class="btn btn-violeta-azulado btn-lg w-100 mb-2">
+                  <i class="fas fa-sign-in-alt"></i> Inicia Sesión para Comprar
+                </a>
+              {{/if}}
+
+              <button class="btn btn-outline-secondary w-100">
+                <i class="fas fa-arrow-left"></i> Volver al Catálogo
+              </button>
+    {{else}}
+      <!-- Carrito vacío -->
+      <div class="row">
+        <div class="col-md-8 offset-md-2">
+          <div class="card shadow-sm text-center py-5">
+            <div class="card-body">
+              <i class="fas fa-shopping-cart fa-5x text-muted mb-3"></i>
+              <h3 class="text-muted">Tu carrito está vacío</h3>
+              <p class="text-muted mb-4">
+                Aún no has agregado productos a tu carrito. ¡Explora nuestro catálogo!
+              </p>
+              <a href="/catalogo" class="btn btn-violeta-azulado btn-lg">
+                <i class="fas fa-shopping-bag"></i> Ir al Catálogo
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  {{else}}
+    <!-- Sin items -->
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm text-center py-5">
+          <div class="card-body">
+            <i class="fas fa-shopping-cart fa-5x text-muted mb-3"></i>
+            <h3 class="text-muted">Tu carrito está vacío</h3>
+            <p class="text-muted mb-4">
+              Aún no has agregado productos a tu carrito. ¡Explora nuestro catálogo!
+            </p>
+            <a href="/catalogo" class="btn btn-violeta-azulado btn-lg">
+              <i class="fas fa-shopping-bag"></i> Ir al Catálogo
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+</div>
+
+<!-- Modal de Checkout  -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-violeta-azulado text-white">
+        <h5 class="modal-title" id="checkoutModalLabel">
+          <i class="fas fa-map-marker-alt"></i> Información de Entrega
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="ciudadInput" class="form-label">
+            <i class="fas fa-city"></i> Ciudad
+          </label>
+          <input type="text" class="form-control" id="ciudadInput" placeholder="Ej. Buenos Aires, Rosario, Mendoza">
+          <small class="text-muted">Ingresa tu ciudad de residencia</small>
+        </div>
+        <div class="mb-3">
+          <label for="direccionInput" class="form-label">
+            <i class="fas fa-home"></i> Dirección de Entrega
+          </label>
+          <textarea class="form-control" id="direccionInput" rows="3" placeholder="Calle, número, apartamento, etc."></textarea>
+          <small class="text-muted">Ingresa tu dirección completa de entrega</small>
+        </div>
+        <div class="mb-3">
+          <label for="telefonoInput" class="form-label">
+            <i class="fas fa-phone"></i> Teléfono de Contacto
+          </label>
+          <input type="tel" class="form-control" id="telefonoInput" placeholder="+55 9 8765-4321">
+          <small class="text-muted">Número de teléfono para contactarte sobre tu pedido</small>
+        </div>
+
+        <!-- Resumen del pedido -->
+        <hr>
+        <div class="alert alert-info">
+          <strong>Resumen de tu Pedido:</strong>
+          <br>
+          <div class="d-flex justify-content-between mt-2">
+            <span>Subtotal:</span>
+            <strong>$<span id="modalSubtotal">{{subtotal}}</span></strong>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span>Envío:</span>
+            <span class="text-success"><strong>Gratis</strong></span>
+          </div>
+          <hr class="my-2">
+          <div class="d-flex justify-content-between">
+            <strong>Total:</strong>
+            <h5 class="text-violeta-azulado mb-0">$<span id="modalTotal">{{total}}</span></h5>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-violeta-azulado" onclick="confirmarPedido()">
+          <i class="fas fa-check"></i> Confirmar Pedido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .table-hover tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .cantidad-input {
+    text-align: center;
+  }
+
+  .btn-eliminar:hover {
+    transform: scale(1.1);
+  }
+
+
+  .sticky-top {
+    top: 80px;
+  }
+</style>
+
+<script>
+  // Actualizar cantidad cuando cambia el input
+  document.querySelectorAll('.cantidad-input').forEach(input => {
+    input.addEventListener('change', async function() {
+      const row = this.closest('.item-row');
+      const idItem = row.getAttribute('data-id-item');
+      const cantidad = parseInt(this.value);
+
+      if (cantidad <= 0) {
+        alert('La cantidad debe ser mayor a 0');
+        this.value = 1;
+        return;
+      }
+
+      try {
+        const response = await fetch('/carrito/actualizar-cantidad', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            id_item: idItem,
+            cantidad: cantidad
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Actualizar subtotal 
+          const subtotalElement = row.querySelector('.subtotal-value');
+          subtotalElement.textContent = '$' + parseFloat(data.item.subtotal).toFixed(2);
+          recalcularTotales();
+        } 
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    });
+  });
+
+  // Función para recalcular totales
+  function recalcularTotales() {
+    let subtotal = 0;
+    document.querySelectorAll('.item-row').forEach(row => {
+      const subtotalText = row.querySelector('.subtotal-value').textContent;
+      const valor = parseFloat(subtotalText.replace('$', '').replace(',', ''));
+      subtotal += valor;
+    });
+
+    const total = subtotal;
+
+    document.getElementById('subtotalValue').textContent = subtotal.toFixed(2);
+    document.getElementById('totalValue').textContent = total.toFixed(2);
+  }
+
+  // Función para eliminar del carrito
+  async function eliminarDelCarrito(idItem) {
+    if (!confirm('¿Deseas eliminar este producto del carrito?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/carrito/eliminar/${idItem}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        location.reload();
+      } else {
+        alert('Error al eliminar el producto');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al eliminar');
+    }
+  }
+
+  // Función para vaciar carrito
+  function vaciarCarrito() {
+    if (!confirm('¿Deseas vaciar todo el carrito? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    // Eliminar todos los items
+    document.querySelectorAll('.item-row').forEach(row => {
+      const idItem = row.getAttribute('data-id-item');
+      fetch(`/carrito/eliminar/${idItem}`, {
+        method: 'DELETE'
+      });
+    });
+
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  }
+
+  // Función para proceder al pago
+  function procederPago() {
+    alert('Redirigiendo a checkout...');
+    // TODO: Redirigir a una página de checkout o pago
+    // window.location.href = '/checkout';
+  }
+</script>
+
+<script>
+  function mostrarCheckout() {
+    // Evitar problemas de backdrop si el modal está anidado (por ejemplo, dentro de carritoModal)
+    const modalEl = document.getElementById('checkoutModal');
+    if (modalEl.parentNode !== document.body) {
+      document.body.appendChild(modalEl);
+    }
+    
+    // Primero cerramos el modal del carrito para que no interfieran los backdrops
+    const carritoModalEl = document.getElementById('carritoModal');
+    if (carritoModalEl) {
+      const carritoModal = bootstrap.Modal.getInstance(carritoModalEl);
+      if (carritoModal) {
+        carritoModal.hide();
+      }
+    }
+
+    // Pequeño delay para permitir que el carritoModal se cierre limpiamente
+    setTimeout(() => {
+      const checkoutModal = new bootstrap.Modal(modalEl);
+      checkoutModal.show();
+    }, 400);
+  }
+
+  // Cargar datos cuando se abre el modal
+  document.getElementById('checkoutModal').addEventListener('shown.bs.modal', function () {
+    fetch('/carrito/checkout/datos-cliente')
+      .then(res => res.json())
+      .then(cliente => {
+        if (cliente && cliente.ciudad) {
+          document.getElementById('ciudadInput').value = cliente.ciudad;
+        }
+        if (cliente && cliente.direccion) {
+          document.getElementById('direccionInput').value = cliente.direccion;
+        }
+        if (cliente && cliente.telefono) {
+          document.getElementById('telefonoInput').value = cliente.telefono;
+        }
+      })
+      .catch(err => console.error('Error:', err));
+  });
+
+  // Confirmar pedido
+  async function confirmarPedido() {
+    const ciudad = document.getElementById('ciudadInput').value.trim();
+    const direccion = document.getElementById('direccionInput').value.trim();
+    const telefono = document.getElementById('telefonoInput').value.trim();
+
+    // Validación
+    if (!ciudad) {
+      alert('Por favor ingresa una ciudad');
+      return;
+    }
+    if (!direccion) {
+      alert('Por favor ingresa una dirección');
+      return;
+    }
+    if (!telefono) {
+      alert('Por favor ingresa un teléfono');
+      return;
+    }
+
+    // Validar formato de teléfono básico
+    if (telefono.length < 7) {
+      alert('El teléfono debe tener al menos 7 dígitos');
+      return;
+    }
+
+    try {
+      // Procesar el pedido
+      const response = await fetch('/carrito/checkout/procesar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ciudad: ciudad,
+          direccion: direccion,
+          telefono: telefono
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Cerrar modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('checkoutModal'));
+        if (modal) {
+          modal.hide();
+        }
+        
+        // Mostrar mensaje de éxito
+        alert(`¡Pedido #${data.id_pedido} realizado exitosamente!\n\nEstará enviado a la dirección proporcionada.`);
+        
+        // Redirigir a página de éxito
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      } else {
+        alert('Error: ' + (data.error || 'No se pudo procesar el pedido'));
+      }
+    } catch (error) {
+      console.error('Error al procesar pedido:', error);
+      alert('Error al procesar el pedido: ' + error.message);
+    }
+  }
+</script>
+
+

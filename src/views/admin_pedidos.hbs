@@ -1,0 +1,142 @@
+<div class="header d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0 text-violeta-azulado"><i class="bi bi-cart-check me-2"></i> Gestión de Pedidos</h4>
+</div>
+
+{{#if varMensaje}}
+<div class="alert alert-{{varEstiloMensaje}} alert-dismissible fade show shadow-sm" role="alert">
+    {{varMensaje}}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white border-bottom">
+        <h5 class="mb-0">Todos los Pedidos</h5>
+    </div>
+    <div class="card-body p-0">
+        {{#if pedidos.length}}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">ID Pedido</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Contacto</th>
+                        <th>Total</th>
+                        <th>Estado Actual</th>
+                        <th class="text-center pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each pedidos}}
+                    <tr>
+                        <td class="ps-4">
+                            <span class="fw-bold text-violeta-azulado">#{{this.id_pedido}}</span>
+                        </td>
+                        <td>{{formatearFecha this.fecha}}</td>
+                        <td>
+                            <strong>{{this.cliente.relacion_cliente_usuario.nombre}} {{this.cliente.relacion_cliente_usuario.apellido}}</strong>
+                            <br>
+                            <small class="text-muted">{{this.cliente.relacion_cliente_usuario.email}}</small>
+                        </td>
+                        <td>
+                            <small><i class="bi bi-geo-alt"></i> {{this.cliente.ciudad}}, {{this.cliente.direccion}}</small><br>
+                            <small><i class="bi bi-phone"></i> {{this.cliente.telefono}}</small>
+                        </td>
+                        <td class="fw-bold text-success">${{this.total}}</td>
+                        <td>
+                            {{#if this.isPendiente}}
+                                <span class="badge bg-warning text-dark"><i class="bi bi-clock-history"></i> Pendiente</span>
+                            {{/if}}
+                            {{#if this.isConfirmado}}
+                                <span class="badge bg-info text-dark"><i class="bi bi-check-circle"></i> Confirmado</span>
+                            {{/if}}
+                            {{#if this.isEnviado}}
+                                <span class="badge bg-primary"><i class="bi bi-truck"></i> Enviado</span>
+                            {{/if}}
+                            {{#if this.isEntregado}}
+                                <span class="badge bg-success"><i class="bi bi-box-seam"></i> Entregado</span>
+                            {{/if}}
+                            {{#if this.isCancelado}}
+                                <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Cancelado</span>
+                            {{/if}}
+                        </td>
+                        <td class="text-center pe-4">
+                            <button class="btn btn-sm btn-outline-violeta-azulado" data-bs-toggle="modal" data-bs-target="#estadoModal-{{this.id_pedido}}" title="Cambiar Estado">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <!-- Botón para ver detalles podría ir aquí -->
+                            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#detalles-{{this.id_pedido}}" title="Ver Productos">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <!-- Fila expansible para ver los productos del pedido -->
+                    <tr class="collapse" id="detalles-{{this.id_pedido}}">
+                        <td colspan="7" class="bg-light p-4">
+                            <h6 class="text-violeta-azulado mb-3"><i class="bi bi-list-ul me-2"></i> Artículos del Pedido #{{this.id_pedido}}</h6>
+                            <table class="table table-sm table-bordered bg-white mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Talle</th>
+                                        <th class="text-center">Cant.</th>
+                                        <th class="text-end">Precio U.</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each this.items}}
+                                    <tr>
+                                        <td>{{this.inventario.Producto.nombre}}</td>
+                                        <td>{{this.inventario.talle}}</td>
+                                        <td class="text-center">{{this.cantidad}}</td>
+                                        <td class="text-end">${{this.precioxUni}}</td>
+                                        <td class="text-end fw-bold">${{this.subTotal}}</td>
+                                    </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Modal para Cambiar Estado -->
+                    <div class="modal fade" id="estadoModal-{{this.id_pedido}}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header bg-violeta-azulado text-white">
+                                    <h6 class="modal-title"><i class="bi bi-arrow-repeat"></i> Cambiar Estado - Pedido #{{this.id_pedido}}</h6>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form action="/admin/pedidos/{{this.id_pedido}}/estado" method="POST">
+                                    <div class="modal-body">
+                                        <label class="form-label text-muted small">Selecciona el nuevo estado:</label>
+                                        <select name="nuevoEstado" class="form-select">
+                                            <option value="pendiente" {{#if this.isPendiente}}selected{{/if}}>Pendiente</option>
+                                            <option value="confirmado" {{#if this.isConfirmado}}selected{{/if}}>Confirmado</option>
+                                            <option value="enviado" {{#if this.isEnviado}}selected{{/if}}>Enviado</option>
+                                            <option value="entregado" {{#if this.isEntregado}}selected{{/if}}>Entregado</option>
+                                            <option value="cancelado" {{#if this.isCancelado}}selected{{/if}}>Cancelado</option>
+                                        </select>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-sm btn-violeta-azulado">Guardar Cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        {{else}}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox fa-3x text-muted mb-3 d-block" style="font-size: 3rem;"></i>
+            <h5 class="text-muted">No hay pedidos registrados en el sistema</h5>
+        </div>
+        {{/if}}
+    </div>
+</div>
